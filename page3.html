@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Amount Selection </title>
+<title>Amount Selection Demo</title>
 
 <style>
 *{
@@ -152,6 +152,11 @@ font-weight:bold;
 cursor:pointer;
 }
 
+button:disabled{
+opacity:.6;
+cursor:not-allowed;
+}
+
 .footer{
 text-align:center;
 padding:12px;
@@ -166,16 +171,8 @@ font-size:11px;
 <div class="container">
 
 <div class="header">
-
-<h2>🇰🇪🇰🇪Congratulations 🎉</h2>
-
-<p><strong id="applicantName">Kipngetich Isaac</strong></p>
-
-<p>
-You're eligible for NYOTA Funds Limits.
-Kindly choose the amount you want to apply then you continue with application.
-</p>
-  
+<h2>💰 Amount Selection Demo</h2>
+<p>Select an example amount below.</p>
 </div>
 
 <div class="content">
@@ -244,30 +241,46 @@ Kindly choose the amount you want to apply then you continue with application.
 <p><strong>Selected Amount:</strong> <span id="selected">Ksh ---</span></p>
 </div>
 
-<button type="button">Continue →</button>
+<button id="continueBtn" type="button" disabled>Continue →</button>
 
 </div>
 
-<div class="footer">🇰🇪🇰🇪NYOTA Funds Application🇰🇪🇰🇪</div>
+<div class="footer">Demo Interface</div>
 
 </div>
 
 <script>
-const radios=document.querySelectorAll('input[name="amount"]');
+const radios = document.querySelectorAll('input[name="amount"]');
+const selected = document.getElementById("selected");
+const button = document.getElementById("continueBtn");
+
+let chosenAmount = "";
 
 radios.forEach(radio=>{
-radio.addEventListener("change",function(){
+  radio.addEventListener("change",function(){
 
-document.querySelectorAll(".option").forEach(card=>{
-card.classList.remove("active");
+    document.querySelectorAll(".option").forEach(card=>{
+      card.classList.remove("active");
+    });
+
+    this.closest(".option").classList.add("active");
+
+    chosenAmount = this.value;
+    selected.textContent = "Ksh " + Number(chosenAmount).toLocaleString();
+
+    localStorage.setItem("selectedAmount", chosenAmount);
+
+    button.disabled = false;
+  });
 });
 
-this.closest(".option").classList.add("active");
+button.addEventListener("click",function(){
+  if(!chosenAmount){
+    alert("Please select an amount.");
+    return;
+  }
 
-document.getElementById("selected").textContent=
-"Ksh "+Number(this.value).toLocaleString();
-
-});
+  window.location.href = "payment.html";
 });
 </script>
 

